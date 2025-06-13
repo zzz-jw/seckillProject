@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    web:
+      resources:
+        add-mappings: false
   # thymeleaf配置
   thymeleaf:
     # 关闭缓存

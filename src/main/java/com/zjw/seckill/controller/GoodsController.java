@@ -2,7 +2,9 @@ package com.zjw.seckill.controller;
 
 
 import com.zjw.seckill.pojo.TUser;
+import com.zjw.seckill.service.ITGoodsService;
 import com.zjw.seckill.service.ITUserService;
+import com.zjw.seckill.vo.RespBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,11 +37,9 @@ public class GoodsController {
 
     @Autowired
     private ITUserService itUserService;
-/*
     @Autowired
     private ITGoodsService itGoodsService;
 
-*/
 @Autowired
 private RedisTemplate redisTemplate;
 @Autowired
@@ -93,19 +93,20 @@ private ThymeleafViewResolver thymeleafViewResolver;
     }*/
     @ApiOperation("商品列表")
     @RequestMapping(value = "/toList", produces = "text/html;charset=utf-8", method = RequestMethod.GET)
-    @ResponseBody
-    public String toList(Model model, HttpServletRequest request, HttpServletResponse response,  @CookieValue(value = "userTicket", required = false) String userTicket) {
-        if(userTicket == null)
+    public String toList(Model model, TUser user) {
+        //使用了webMVC中自带的参数解析器提前对参数进行了校验
+        /*if(userTicket == null)
             return "redirect:/login/toLogin";
         TUser user = itUserService.getUserByCookie(userTicket,request,response);
         if(user == null)
             return "redirect:/login/toLogin";
+        */
         model.addAttribute("user", user);
+        model.addAttribute("goodsList", itGoodsService.findGoodsVo());
         return  "goodsList";
     }
-/*
 
-    @ApiOperation("商品详情")
+    /*@ApiOperation("商品详情")
     @RequestMapping(value = "/goodsDetail2/{goodsId}", produces = "text/html;charset=utf-8", method = RequestMethod.GET)
     @ResponseBody
     public String toDetail2(Model model, TUser user, @PathVariable Long goodsId, HttpServletRequest request, HttpServletResponse response) {
@@ -149,12 +150,11 @@ private ThymeleafViewResolver thymeleafViewResolver;
 
         return html;
     }
-
+*/
     @ApiOperation("商品详情")
     @RequestMapping(value = "/detail/{goodsId}", method = RequestMethod.GET)
-    @ResponseBody
-    public RespBean toDetail(TUser user, @PathVariable Long goodsId) {
-        ValueOperations valueOperations = redisTemplate.opsForValue();
+    public String toDetail(TUser user, Model model, @PathVariable Long goodsId) {
+        /*ValueOperations valueOperations = redisTemplate.opsForValue();
 //        String html = (String) valueOperations.get("goodsDetail:" + goodsId);
 //        if (!StringUtils.isEmpty(html)) {
 //            return html;
@@ -196,8 +196,10 @@ private ThymeleafViewResolver thymeleafViewResolver;
         detailVo.setGoodsVo(goodsVo);
         detailVo.setRemainSeconds(remainSeconds);
         detailVo.setSecKillStatus(seckillStatus);
-        return RespBean.success(detailVo);
+        return RespBean.success(detailVo);*/
+        model.addAttribute("user", user);
+        model.addAttribute("goods", itGoodsService.findGoodsVobyGoodsId(goodsId));
+        return "goodsDetail";
     }
-*/
 
 }
